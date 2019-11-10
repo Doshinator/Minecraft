@@ -3,7 +3,11 @@
 
 namespace Display {
     void init();
+    void clear();
+    void update();
     void close();
+    void checkForClose();
+    bool isOpen();
 }
 
 
