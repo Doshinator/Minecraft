@@ -1,8 +1,8 @@
 CC = g++ -std=c++14
 CFLAGS = -c 
-OBJ = main.o display.o
+OBJ = main.o
 DEPS = 
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGLEW -framework OpenGL
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGLEW -framework OpenGL -lglfw
 EXE = main
 
 all: $(OBJ) 
@@ -10,9 +10,6 @@ all: $(OBJ)
 
 main.o: main.cpp
 	$(CC) $(CFLAGS) main.cpp
-
-display.o: src/display.cpp src/display.h
-	$(CC) $(CFLAGS) src/display.cpp
  
 clean:
 		rm $(OBJ) $(EXE)
