@@ -8,8 +8,6 @@
 //GLFW
 #include <GLFW/glfw3.h>
 
-#version 330 core
-layout (location = 0) in vec3 aPos;
 
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
