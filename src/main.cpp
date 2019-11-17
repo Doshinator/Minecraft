@@ -11,7 +11,7 @@
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void drawTriangle();
-void createVertexData();
+unsigned int createVAO();
 unsigned int createVertexShader();
 unsigned int createFragmentShader();
 unsigned int createShaderProgram();
@@ -77,11 +77,9 @@ int main(){
         std::cout << "Failed to initialize GLEW" << std::endl;
         return EXIT_FAILURE;
     }
-   
-    // 5) use the program
-    glUseProgram(createShaderProgram());
-    // 6)
-    // someFunctionThatDrawsTheObjet();
+
+
+
 
     // main game loop
     // ------------------------
@@ -89,9 +87,18 @@ int main(){
         // input
         processInput(window);
 
+        // render color
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
        
+        // draw triangle
+        // 5) use the program
+        glUseProgram(createShaderProgram());
+        // 6)
+        glBindVertexArray(createVAO());
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
         // When the entire frame has been rendered, it is time to swap the back 
         // and the front buffers in order to display what has been rendered and 
@@ -126,22 +133,54 @@ void processInput(GLFWwindow *window){
 // ------------------------
 
 // 1) vertex data
-void createVertexData(){
+unsigned int createVAO(){
+    // 1.1) create vertex data
     float triangleVertecies[] = {
-         0.5f,  0.5f, 0.0f, // top right
-         0.5f, -0.5f, 0.0f, // bottom right
-        -0.0f,  0.5f, 0.0f  // top left
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left 
+    };
+
+    unsigned int indices[] = { 
+        0, 1, 3,
+        1, 2, 3
     };
     // 1.1) Create Vertex data -> Generate Vertex array -> Generate Buffer -> Bind Vetex Array -> Bind Buffer -> buffer data
 
-    unsigned int VBO;
-    glGenVertexArrays(1, &VBO);
+
+    // 1.2 generate vertex array
+    unsigned int VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);
+    // 1.3 generate buffers
     glGenBuffers(1, &VBO);
-    glBindVertexArray(VBO);
+    glGenBuffers(1, &EBO);
+    // 1.4 bind vertex arrays
+    glBindVertexArray(VAO);
+    
+
+    // 1.5 copy vertecies array into vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertecies), triangleVertecies, GL_STATIC_DRAW);
+    
+    // 1.6 copy indecies array into element buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+
+    // 1.7 set vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);  
+    glEnableVertexAttribArray(0); 
+
+    // unbind VBO array (the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind)
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+    // do NOT unbind EBO buffer while the VAO buffer is active, element buffer object IS stored in the VAO
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    //unbind VAO
+    glBindVertexArray(0);  
+
+    return VAO;
 }
 
 // 2) creating vertex shader
@@ -163,6 +202,7 @@ unsigned int createVertexShader(){
     if(!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return EXIT_FAILURE;
     }
     return vertexShader;
 }
@@ -187,6 +227,7 @@ unsigned int createFragmentShader(){
     if(!success){
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        return EXIT_FAILURE;
     }
 
     return fragmentShader;
