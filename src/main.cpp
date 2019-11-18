@@ -79,7 +79,7 @@ int main(){
     }
 
 
-
+    unsigned int VAO = createVAO();
 
     // main game loop
     // ------------------------
@@ -95,7 +95,7 @@ int main(){
         // 5) use the program
         glUseProgram(createShaderProgram());
         // 6)
-        glBindVertexArray(createVAO());
+        glBindVertexArray(VAO);
         // glDrawArrays(GL_TRIANGLES, 0, 3);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -107,8 +107,11 @@ int main(){
 
         glfwPollEvents();
     }
-
-
+    
+    glDeleteVertexArrays(1, &VAO);
+    // glDeleteBuffers(1, &VBO);
+    // glDeleteBuffers(1, &EBO);
+ 
 
     glfwTerminate();
 
