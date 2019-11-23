@@ -1,4 +1,7 @@
 # OpenGL
-Building knowledge about game engineering through GLEW/GLFW3/OpenGL
+Building knowledge about game engine-ering through GLEW/GLFW3/OpenGL
 
-- Game Development 
+- Game Engines
+- OpenGL API libraries
+- C/C++
+- Shaders / Textures / Collision
